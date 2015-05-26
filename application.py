@@ -45,26 +45,23 @@ def addCategory():
         return render_template('new_category.html')\
 
 
-@app.route('/category/<int:category_id>/edit', methods=['GET','POST'])
 # CATEGORY:         Edit
 # REQUIRED PARAMS:  Category ID to retrieve current values (GET)
 #                   Form data with update info (POST)
 # PERMISSIONS:      Logged-in user
-
+@app.route('/category/<int:category_id>/edit', methods=['GET','POST'])
 
 
 # CATEGORY:         Delete
 # REQUIRED PARAMS:  Category ID to delete
 # PERMISSIONS:      Logged-in user
-
+@app.route('/category/<int: category_id>/delete', methods=['DELETE'])
 
 
 # CATEGORY:         JSON Endpoint
 # REQUIRED PARAMS:  None
 # PERMISSIONS:      Public
 @app.route('/categories/JSON')
-def categoryJSON():
-    return 0
 
 
 # ITEMS:            List
@@ -78,27 +75,29 @@ def itemList(category_id):
 
 
 # ITEMS:            Add
-# REQUIRED PARAMS:  Category ID to add item to (GET)
-#                   Form data with item info (POST)
+# REQUIRED PARAMS:  Form data with item info
 # PERMISSIONS:      Logged-in user
+@app.route('/item/<int:category_id>/add', methods=['POST'])
 
 
 # ITEMS: Edit
 # REQUIRED PARAMS:  Item ID to display current item info in form (GET)
 #                   Form data with updated item info (POST)
 # PERMISSIONS:      Logged-in user
+@app.route('/item/<int:categoryitems_id>/edit', methods=['GET','POST'])
 
 
 # ITEMS:            Delete
 # REQUIRED PARAMS:  Item ID to delete
 # PERMISSIONS:      Logged-in user
+@app.route('/item/<int:categoryitems_id>/delete', methods=['DELETE'])
 
 
-@app.route('/category/<int:category_id>/itemlist/JSON')
+
 # ITEMS:            JSON Endpoint
 # REQUIRED PARAMS:  Category ID for items to list as JSON
 # PERMISSIONS:      Public
-
+@app.route('/items/<int:category_id>/JSON')
 def itemlistJSON(category_id):
     category = session.query(Category).filter_by(id = category_id).one()
     categoryitems = session.query(CategoryItem).filter_by(category_id = category_id).all()
