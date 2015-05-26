@@ -22,7 +22,7 @@ def restaurantMenuJSON(restaurant_id):
 
 #ADD JSON ENDPOINT HERE
 @app.route('/restaurants/<int:restaurant_id>/menu/JSON')
-def menuItemJSON(restaurant_id, menu_id)
+def menuItemJSON(restaurant_id, menu_id):
     menuItem = session.query(MenuItem).filter_by(id = menu_id).one()
     return jsonify(MenuItem = menuItem.serialize)
 
