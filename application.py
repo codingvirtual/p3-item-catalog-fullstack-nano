@@ -55,7 +55,7 @@ def addCategory():
 # CATEGORY:         Delete
 # REQUIRED PARAMS:  Category ID to delete
 # PERMISSIONS:      Logged-in user
-@app.route('/category/<int: category_id>/delete', methods=['DELETE'])
+@app.route('/category/<int:category_id>/delete', methods=['DELETE'])
 
 
 # CATEGORY:         JSON Endpoint
