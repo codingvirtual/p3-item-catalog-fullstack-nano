@@ -34,10 +34,10 @@ def category_list():
 # CATEGORY:         Add
 # REQUIRED PARAMS:  none
 # PERMISSIONS:      Logged-in user
-@app.route('/category/add', methods = ['GET', 'POST'])
+@app.route('/category/add', methods=['GET', 'POST'])
 def addCategory():
     if request.method == 'POST':
-        newCategory = Category(name = request.form['name'])
+        newCategory = Category(name=request.form['name'])
         session.add(newCategory)
         session.commit()
         return redirect(url_for('category_list'))
@@ -50,6 +50,17 @@ def addCategory():
 #                   Form data with update info (POST)
 # PERMISSIONS:      Logged-in user
 @app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
+def editCategory(category_id):
+    category = session.query(Category).filter_by(id=category_id).one()
+    if request.method == 'POST':
+        if request.form['name']:
+            category.name = request.form['name']
+            session.add(category)
+            session.commit()
+        return redirect(url_for('category_list'))
+    else:
+        return render_template('category_edit.html', category_id=category_id,
+                               category_name=category.name)
 
 
 # CATEGORY:         Delete
@@ -62,7 +73,9 @@ def addCategory():
 # REQUIRED PARAMS:  None
 # PERMISSIONS:      Public
 @app.route('/categories/JSON')
-
+def categoryListJSON():
+    categories = session.query(Category).all()
+    return jsonify(category_list=[i.serialize for i in categories])
 
 # ITEMS:            List
 # REQUIRED PARAMS:  Category ID to list items from
@@ -102,7 +115,7 @@ def addItem(category_id):
 # REQUIRED PARAMS:  Item ID to display current item info in form (GET)
 #                   Form data with updated item info (POST)
 # PERMISSIONS:      Logged-in user
-@app.route('/item/<int:categoryitems_id>/edit', methods=['GET','POST'])
+@app.route('/item/<int:categoryitems_id>/edit', methods=['GET', 'POST'])
 
 
 # ITEMS:            Delete
@@ -117,10 +130,9 @@ def addItem(category_id):
 # PERMISSIONS:      Public
 @app.route('/items/<int:category_id>/JSON')
 def itemlistJSON(category_id):
-    category = session.query(Category).filter_by(id = category_id).one()
     categoryitems = session.query(CategoryItem)\
-        .filter_by(category_id = category_id).all()
-    return jsonify(CategoryItems = [i.serialize for i in categoryitems])
+        .filter_by(category_id=category_id).all()
+    return jsonify(items_list=[i.serialize for i in categoryitems])
 
 
 if __name__ == '__main__':

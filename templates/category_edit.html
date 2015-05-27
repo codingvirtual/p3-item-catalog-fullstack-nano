@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel=stylesheet type=text/css
+          href="{{ url_for('static', filename='styles.css') }}">
+    <title>{{category_name}}: Edit</title>
+</head>
+<body>
+<h1>{{category_name}}: Edit</h1>
+
+<form action="#" method='post'>
+
+
+    <p>Name:</p>
+    <input type='text' size='30' name='name' placeholder="{{category_name}}">
+
+
+    <button type='submit' value='submit'>Make Change</button>
+
+
+    <a href='/'>Cancel</a>
+
+
+</form>
+</body>
+</html>
