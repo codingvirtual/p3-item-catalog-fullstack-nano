@@ -126,7 +126,12 @@ def addItem(category_id):
 # ITEMS:            Delete
 # REQUIRED PARAMS:  Item ID to delete
 # PERMISSIONS:      Logged-in user
-@app.route('/item/<int:categoryitems_id>/delete', methods=['DELETE'])
+@app.route('/item/<int:categoryitems_id>/delete')
+def itemDelete(categoryitems_id):
+    item = session.query(CategoryItem).filter_by(id=categoryitems_id).one()
+    session.delete(item)
+    session.commit()
+    return redirect(url_for('category_list'))
 
 
 
