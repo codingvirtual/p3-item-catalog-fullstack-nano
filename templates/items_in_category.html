@@ -19,6 +19,10 @@
         {% endif %}
         {% endwith %}
     </div>
+    <div class="protected">
+        <h2><a href="/item/{{category_id}}/add" class="protected">Add a new Item to This Category</a></h2>
+        <br />
+    </div>
     {% for i in categoryitems %}
     <div>
         <span><p>{{i.title}} - {{i.description}}</p></span>

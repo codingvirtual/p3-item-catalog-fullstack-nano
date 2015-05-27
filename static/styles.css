@@ -68,4 +68,6 @@ a {
     background: #cee5F5;
 }
 
-
+.protected {
+    color: red;
+}

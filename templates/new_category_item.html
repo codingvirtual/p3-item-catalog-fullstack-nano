@@ -4,27 +4,26 @@
     <meta charset="UTF-8">
     <link rel=stylesheet type=text/css
           href="{{ url_for('static', filename='styles.css') }}">
-    <title>Catalog App</title>
+    <title>{{category_name}}: Add</title>
 </head>
 <body>
-<div>
-    <div class='flash'>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li><strong> {{ message }} </strong></li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
-    </div>
-    {% for i in categories %}
-    <div>
-        <span><p>{{i.name}}</p></span>
-    </div>
-    {% endfor %}
-</div>
-</div>
+<h1>Add New Item to Category: {{category_name}}</h1>
+
+<form action="#" method='post'>
+
+
+    <p>Title:</p>
+    <input type='text' size='30' name='title' placeholder="Title">
+
+    <p>Description:</p>
+    <input type='text' size='30' name='description' placeholder="Description">
+
+    <button type='submit' value='submit'>Add Item</button>
+
+
+    <a href='/category/{{category_id}}/items'>Cancel</a>
+
+
+</form>
 </body>
 </html>

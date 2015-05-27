@@ -7,24 +7,33 @@
     <title>Catalog App</title>
 </head>
 <body>
-    <div>
-        <div class='flash'>
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            <ul>
-                {% for message in messages %}
-                <li><strong> {{ message }} </strong></li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-            {% endwith %}
-        </div>
-        {% for i in categories %}
-        <div>
-            <span><a href="/category/{{i.id}}/items">{{i.name}}</a></p></span>
-        </div>
-        {% endfor %}
-        </div>
+<div>
+    <div class='flash'>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li><strong> {{ message }} </strong></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
     </div>
+    <div class="protected">
+        <h2><a href="/category/add">Add a new Category</a></h2>
+        <br />
+    </div>
+    <table>
+        {% for i in categories %}
+        <tr>
+            <td><a href="/category/{{i.id}}/items">{{i.name}}</a></td>
+            <td><a href="/category/{{i.id}}/edit" class="protected">Edit</a>
+            </td>
+            <td><a href="/category/{{i.id}}/delete"
+                   class="protected">Delete</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 </body>
 </html>
