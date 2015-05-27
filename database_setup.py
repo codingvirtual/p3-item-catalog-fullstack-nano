@@ -14,6 +14,15 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
 
+    # We added this serialize function to be able to send JSON objects in a
+    # serializable format
+    @property
+    def serialize(self):
+
+        return {
+            'name': self.name,
+            'id': self.id
+        }
 
 class CategoryItem(Base):
     __tablename__ = 'categoryitems'
