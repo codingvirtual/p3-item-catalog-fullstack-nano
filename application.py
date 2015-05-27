@@ -66,7 +66,12 @@ def editCategory(category_id):
 # CATEGORY:         Delete
 # REQUIRED PARAMS:  Category ID to delete
 # PERMISSIONS:      Logged-in user
-@app.route('/category/<int:category_id>/delete', methods=['DELETE'])
+@app.route('/category/<int:category_id>/delete')
+def catDelete(category_id):
+    category = session.query(Category).filter_by(id=category_id).one()
+    session.delete(category)
+    session.commit()
+    return redirect(url_for('category_list'))
 
 
 # CATEGORY:         JSON Endpoint
