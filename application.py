@@ -120,7 +120,24 @@ def addItem(category_id):
 # REQUIRED PARAMS:  Item ID to display current item info in form (GET)
 #                   Form data with updated item info (POST)
 # PERMISSIONS:      Logged-in user
-@app.route('/item/<int:categoryitems_id>/edit', methods=['GET', 'POST'])
+@app.route('/item/<int:item_id>/edit',
+           methods=['GET', 'POST'])
+def itemEdit(item_id):
+    item = session.query(CategoryItem).filter_by(id=item_id).one()
+    category_id = item.category_id
+    if request.method == 'POST':
+        if request.form['title']:
+            item.title = request.form['title']
+        if request.form['description']:
+            item.description = request.form['description']
+        session.add(item)
+        session.commit()
+        return redirect(url_for('itemList', category_id=category_id))
+    else:
+        return render_template('edit_item.html',
+                        item_id=item.id,
+                        item_title=item.title,
+                        item_description=item.description)
 
 
 # ITEMS:            Delete
