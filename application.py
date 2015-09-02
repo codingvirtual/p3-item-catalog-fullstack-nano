@@ -30,7 +30,7 @@ messages = []
 CLIENT_ID = json.loads(
     open('../client_secrets.json', 'r').read())['web']['client_id']
 
-engine = create_engine('sqlite:///catalog.db')
+engine = create_engine('sqlite:///supporting-files/catalog.db')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
