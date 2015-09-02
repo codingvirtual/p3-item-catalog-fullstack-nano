@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Category, CategoryItem
+from support.database_setup import Base, Category, CategoryItem
 
 from flask import session as login_session
 import random, string
@@ -329,3 +329,8 @@ def get_flashed_messages():
     messages = []
     return displayMessages
 
+if __name__ == '__main__':
+    app.debug = True
+    app.secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                             for x in xrange(32))
+    app.run(host='0.0.0.0', port=8000)

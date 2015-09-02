@@ -1,19 +1,22 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
+import jinja2
+
 app = Flask(__name__)
 
 import random, string
 
-from test import CatalogOperations
+from catalog_operations import CatalogOperations
 
 catalogOps = CatalogOperations("Bill")
+
+
+@app.route('/', methods=['GET', 'POST'])
+def doHome():
+    return catalogOps.sayHello()
 
 # @app.route('/login')
 # @app.route('/gconnect', methods=['POST'])
 # @app.route('/logout')
-@app.route('/', methods=['GET', 'POST'])
-def doHome():
-    global catalogOps
-    return catalogOps.sayHello()
 # @app.route('/catalog.html', methods=['GET', 'POST'])
 # @app.route('/category/add', methods=['GET', 'POST'])
 # @app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
