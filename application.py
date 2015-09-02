@@ -329,8 +329,3 @@ def get_flashed_messages():
     messages = []
     return displayMessages
 
-if __name__ == '__main__':
-    app.debug = True
-    app.secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                             for x in xrange(32))
-    app.run(host='0.0.0.0', port=8000)
