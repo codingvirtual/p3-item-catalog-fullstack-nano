@@ -18,7 +18,6 @@ class Category(Base):
     # serializable format
     @property
     def serialize(self):
-
         return {
             'name': self.name,
             'id': self.id
