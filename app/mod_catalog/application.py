@@ -7,14 +7,12 @@
 # Items in a category:
 #   List, Add, Edit, Delete, JSON endpoint
 
-from flask import Flask, render_template, request, redirect, url_for, jsonify
-app = Flask(__name__)
+import Flask, render_template, request, redirect, url_for, jsonify
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from support.database_setup import Base, Category, CategoryItem
+from app import app
+from app import login_session
 
-from flask import session as login_session
+
 import random, string
 
 from oauth2client.client import flow_from_clientsecrets
@@ -30,11 +28,6 @@ messages = []
 CLIENT_ID = json.loads(
     open('../client_secrets.json', 'r').read())['web']['client_id']
 
-engine = create_engine('sqlite:///supporting-files/catalog.db')
-Base.metadata.bind = engine
-
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
 
 @app.route('/login')
 def showLogin():
