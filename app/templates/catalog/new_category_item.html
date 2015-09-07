@@ -3,7 +3,7 @@
 <head lang="en">
     <meta charset="UTF-8">
     <link rel=stylesheet type=text/css
-          href="{{ url_for('static', filename='styles.css') }}">
+          href="{{ url_for('static', filename='css/styles.css') }}">
     <title>{{category_name}}: Add</title>
 </head>
 <body>
@@ -21,7 +21,7 @@
     <button type='submit' value='submit'>Add Item</button>
 
 
-    <a href='/category/{{category_id}}/items'>Cancel</a>
+    <a href='/catalog/category/{{category_id}}/items'>Cancel</a>
 
 
 </form>
