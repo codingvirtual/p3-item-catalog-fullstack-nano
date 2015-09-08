@@ -1,5 +1,6 @@
 {% extends "catalog/base.html" %}
 {% block content %}
+<!-- this template shows a list of all the items in a given category. -->
 <div class="container">
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
@@ -10,7 +11,9 @@
             </div>
             <div class="row">
                 <div class="col-md-6 col-md-offset-3">
-                    <a href="/catalog/item/{{category_id}}/add"
+                    <!-- the following link will only be displayed if the
+                            user is logged in. -->
+                    <a href="/catalog_main/item/{{category_id}}/add"
                        class="btn bg-info center-block {{showLinks}}" role="button">Add
                         a new Item to
                         This Category</a>
@@ -25,6 +28,7 @@
         <div class="col-md-8 col-md-offset-2">
             <div class="list-group">
                 {% for i in categoryitems %}
+                <!-- the following block lists all the items in the category -->
                 <div class="list-group-item">
                     <div class="row">
                         <div class="col-md-9">
@@ -34,18 +38,23 @@
                             <p class="list-group-item-text">
                                 {{i.description}}</p>
                         </div>
+                        <!-- the links/buttons in the section below allow
+                                the user to edit the item info or delete
+                                the item entirely. They are only visible
+                                if there is a logged-in user as indicated
+                                by the values within the showLinks variable -->
                         <div class="col-md-3">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="{{showLinks}}">
-                                        <a href="/catalog/item/{{i.id}}/edit"
+                                        <a href="/catalog_main/item/{{i.id}}/edit"
                                            class="btn bg-success"
                                            role="button">Edit</a>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="{{showLinks}}">
-                                        <a href="/catalog/item/{{i.id}}/delete"
+                                        <a href="/catalog_main/item/{{i.id}}/delete"
                                            class="btn bg-danger"
                                            role="button">Delete</a>
                                     </div>

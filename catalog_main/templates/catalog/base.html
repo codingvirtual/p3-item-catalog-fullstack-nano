@@ -4,18 +4,24 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- This page is the jinja2 template page that all other pages in the
+            site inherit from. It contains the navbar and message flash
+            content and a placeholder for child templates to insert their
+            content as well -->
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet"
           href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
-    <!-- Optional theme -->
+    <!-- Optional Bootstrap theme -->
     <link rel="stylesheet"
           href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 
 
     <link rel=stylesheet
           href="{{ url_for('static', filename='css/styles.css') }}">
-    <title>Catalog</title>
+
+    <title>Catalog App</title>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -24,29 +30,43 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <!-- load the Google+ client API's -->
     <script src="https://apis.google.com/js/client:platform.js?onload=start"
             async defer>
     </script>
     <script>
+        // template code from Google to handle G+ signin
         function signInCallback(authResult) {
             if (authResult['code']) {
                 $.ajax({
                     type: 'POST',
+                    // the URL below will notify the app that the user is
+                    // signed in.
                     url: '/catalog/gconnect?state={{state}}',
                     processData: false,
                     contentType: 'application/octet-stream; charset=utf-8',
                     data: authResult['code'],
                     success: function (result) {
+                        // any success (200 OK) means log in was successful
                         console.log("sign-in successful");
-                        window.location.href = "/catalog/catalog.html";
+                        // send the user to the main page
+                        window.location.href = "/catalog_main/catalog.html";
                     }
                 })
             } else if (authResult['error']) {
+                // an error of some form was returned, so login was not
+                // successful
                 console.log("There was an error: " + authResult['error']);
+                // send the user back to the main page. Since state was not
+                // set, the user will not be logged in
+                window.location.href = "/catalog_main/catalog.html";
             }
         }
     </script>
 
+    <!--    the following is jinja2 boilerplate code that allows the page to
+            display any messages that the app code queues for display
+            when this page finishes loading -->
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <div class="alert alert-info" role="alert">
@@ -57,8 +77,10 @@
     {% endif %}
     {% endwith %}
 
+    <!-- end jinja2 boilerplate code -->
 </head>
 <body>
+<!-- Navbar content. -->
 <div class="container">
     <nav id="header" class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
@@ -66,6 +88,11 @@
                 <a class="navbar-brand" href="/">Catalog App</a>
             </div>
             <div id="navbar" class="nav navbar-nav navbar-right">
+                <!--    Google Plus Sign-in Button below. the showSignIn variable
+                        will contain either "show" or "hide" depending on
+                        whether or not the button should be visible, which
+                        is keyed off of whether or not there is a logged-in
+                        user. If user is logged in, the button won't show -->
                 <div id="signinButton" class="btn navbar-btn {{showSignIn}}">
                     <span class="g-signin"
                           data-scope="openid"
@@ -77,9 +104,14 @@
                           data-approvalprompt="force">
                     </span>
                 </div>
+                <!--    Signout Button below. the showLinks variable
+                        will contain either "show" or "hide" depending on
+                        whether or not the button should be visible, which
+                        is keyed off of whether or not there is a logged-in
+                        user. If user is logged in, the button WILL show -->
                 <div id="signOut"
                      class="btn btn-default navbar-btn {{showLinks}}">
-                    <a href="/catalog/logout">Sign Out</a>
+                    <a href="/catalog_main/logout">Sign Out</a>
                 </div>
             </div>
         </div>
@@ -87,12 +119,11 @@
 
 
     <!-- content template -->
+    <!-- will be filled in by child templates that inherit from this
+        base template -->
     {% block content %}
     {% endblock content %}
 
-    <!-- footer template -->
-    {% block footer %}
-    {% endblock footer %}
 
 </div>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

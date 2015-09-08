@@ -1,0 +1,8 @@
+/*  Most CSS is provided via Bootstrap.
+    Since a fixed-top navbar is used, a padding of 70 px is required at
+    the top of the page to make room for the navbar.
+*/
+
+body {
+    padding-top: 70px;
+}

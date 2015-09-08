@@ -1,5 +1,9 @@
 {% extends "catalog/base.html" %}
 {% block content %}
+<!-- this template provides a form for the user to input the data to
+        create a new item in the database within the category they were
+        in when the chose to add a new item. Only logged-in users should
+        be able to reach this page -->
 <h1 class="bg-info">Add New Item to Category: {{category_name}}</h1>
 <form action="#" method='post'>
     <p>Title:</p>
@@ -7,6 +11,6 @@
     <p>Description:</p>
     <input type='text' size='30' name='description' placeholder="Description">
     <button type='submit' value='submit' class="bg-success">Add Item</button>
-    <a href='/catalog/category/{{category_id}}/items' class="btn bg-danger" role="button">Cancel</a>
+    <a href='/catalog_main/category/{{category_id}}/items' class="btn bg-danger" role="button">Cancel</a>
 </form>
 {% endblock content%}

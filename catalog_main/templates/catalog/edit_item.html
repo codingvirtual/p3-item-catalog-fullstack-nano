@@ -1,5 +1,8 @@
 {% extends "catalog/base.html" %}
 {% block content %}
+<!-- this template shows the form to all an existing item to be edited.
+        When the page is loaded, it will be pre-filled with the title and
+        description the item has currently and the user can make changes. -->
 <h1 class="bg-info">Edit Item: {{item_title}}</h1>
 <form action="#" method='post'>
     <p>Title:</p>

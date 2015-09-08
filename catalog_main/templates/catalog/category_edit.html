@@ -1,5 +1,7 @@
 {% extends "catalog/base.html" %}
 {% block content %}
+<!-- this template allows the user to edit the name of a category. When it
+        is loaded, it will be pre-filled with the current category name -->
 <h1 class="bg-info">Edit Category: {{category_name}}</h1>
 <form action="#" method='post'>
     <p>Name:</p>
