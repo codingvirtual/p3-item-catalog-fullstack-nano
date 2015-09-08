@@ -1,34 +1,9 @@
 {% extends "catalog/base.html" %}
-{% block header %}
-<nav id="header" class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="/">Catalog App</a>
-        </div>
-        <div id="navbar" class="nav navbar-nav navbar-right">
-            <div id="signIn" class="btn btn-default navbar-btn {{showSignIn}}">
-                <a href="/catalog/login">Sign In</a>
-            </div>
-            <div id="signOut" class="btn btn-default navbar-btn {{showLinks}}">
-                <a href="/catalog/logout">Sign Out</a>
-            </div>
-        </div>
-    </div>
-</nav>
-
-{% endblock header %}
-
 {% block content %}
-<h1>New Category</h1>
-
+<h1 class="bg-info">New Category</h1>
 <form action="#" method = 'post'>
-
-
     <p>Name:</p>
     <input type ='text' size='30' name='name'>
-
-
-    <input type='submit' value='Create'>
-
+    <input type='submit' value='Create' class="bg-success">
 </form>
 {% endblock content%}

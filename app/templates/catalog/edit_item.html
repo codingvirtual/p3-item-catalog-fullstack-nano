@@ -1,39 +1,12 @@
 {% extends "catalog/base.html" %}
-{% block header %}
-<nav id="header" class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="/">Catalog App</a>
-        </div>
-        <div id="navbar" class="nav navbar-nav navbar-right">
-            <div id="signIn" class="btn btn-default navbar-btn {{showSignIn}}">
-                <a href="/catalog/login">Sign In</a>
-            </div>
-            <div id="signOut" class="btn btn-default navbar-btn {{showLinks}}">
-                <a href="/catalog/logout">Sign Out</a>
-            </div>
-        </div>
-    </div>
-</nav>
-
-{% endblock header %}
-
 {% block content %}
-<h1>{{item_name}}: Edit</h1>
-
+<h1 class="bg-info">Edit Item: {{item_title}}</h1>
 <form action="#" method='post'>
-
-
     <p>Title:</p>
     <input type='text' size='30' name='title' placeholder="{{item_title}}">
     <p>Description:</p>
-    <input type="test" size="80" name="description" placeholder="{{item_description}}">
-
-    <input type='submit' value='Make Change'>
-
-
-    <a href='/'>Cancel</a>
-
-
+    <input type="text" size="80" name="description" placeholder="{{item_description}}">
+    <input type='submit' value='Make Change' class="btn bg-success">
+    <a href='/' class="btn bg-danger" role="button">Cancel</a>
 </form>
 {% endblock content%}

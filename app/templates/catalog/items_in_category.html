@@ -1,37 +1,62 @@
 {% extends "catalog/base.html" %}
-{% block header %}
-<nav id="header" class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="/">Catalog App</a>
-        </div>
-        <div id="navbar" class="nav navbar-nav navbar-right">
-            <div id="signIn" class="btn btn-default navbar-btn {{showSignIn}}">
-                <a href="/catalog/login">Sign In</a>
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3 class="text-center">Items in Category</h3>
+                </div>
             </div>
-            <div id="signOut" class="btn btn-default navbar-btn {{showLinks}}">
-                <a href="/catalog/logout">Sign Out</a>
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3">
+                    <a href="/catalog/item/{{category_id}}/add"
+                       class="btn bg-info center-block {{showLinks}}" role="button">Add
+                        a new Item to
+                        This Category</a>
+                </div>
+             </div>
+            <div class="row">
+                <p> </p>
             </div>
         </div>
     </div>
-</nav>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="list-group">
+                {% for i in categoryitems %}
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="list-group-item-heading">
+                                {{i.title}}</h4>
 
-{% endblock header %}
-
-{% block content %}
-<div class="protected">
-    <h2><a href="/catalog/item/{{category_id}}/add" class="protected">Add a new Item to
-        This Category</a></h2>
-    <br/>
+                            <p class="list-group-item-text">
+                                {{i.description}}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="{{showLinks}}">
+                                        <a href="/catalog/item/{{i.id}}/edit"
+                                           class="btn bg-success"
+                                           role="button">Edit</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="{{showLinks}}">
+                                        <a href="/catalog/item/{{i.id}}/delete"
+                                           class="btn bg-danger"
+                                           role="button">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </div>
-<table>
-    {% for i in categoryitems %}
-    <tr>
-        <td>{{i.title}}</td>
-        <td>{{i.description}}</td>
-        <td class="protected"><a href="/catalog/item/{{i.id}}/edit">Edit</a></td>
-        <td class="protected"><a href="/catalog/item/{{i.id}}/delete">Delete</a></td>
-    </tr>
-    {% endfor %}
-</table>
 {% endblock content%}

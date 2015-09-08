@@ -1,34 +1,18 @@
 {% extends "catalog/base.html" %}
-{% block header %}
-<nav id="header" class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="/">Catalog App</a>
-        </div>
-        <div id="navbar" class="nav navbar-nav navbar-right">
-            <div id="signIn" class="btn btn-default navbar-btn {{showSignIn}}">
-                <a href="/catalog/login">Sign In</a>
-            </div>
-            <div id="signOut" class="btn btn-default navbar-btn {{showLinks}}">
-                <a href="/catalog/logout">Sign Out</a>
-            </div>
-        </div>
-    </div>
-</nav>
-
-{% endblock header %}
-
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col-md-12">
-            <h1>Categories<span><a href="/catalog/category/add"
-                                   class="btn btn-default pull-right {{ showLinks }}"
-                                   role="button">Add a new Category</a></span></h1>
+        <div class="col-md-4 col-md-offset-4">
+            <h1 class="text-center">Categories</h1>
+            <a href="/catalog/category/add"
+                     class="btn bg-success {{ showLinks }}"
+                     role="button">Add a new Category</a>
+            <br />
+            </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-5">
+        <div class="col-md-6 col-md-offset-3">
             <div class="list-group">
                 {% for i in categories %}
                 <div class="list-group-item">
@@ -41,13 +25,13 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <a href="/catalog/category/{{i.id}}/edit"
-                                       class="btn btn-default {{showLinks}}"
+                                       class="btn bg-success {{showLinks}}"
                                        role="button">Edit
                                     </a>
                                 </div>
                                 <div class="col-md-6">
                                     <a href="/catalog/category/{{i.id}}/delete"
-                                       class="btn btn-default {{showLinks}}"
+                                       class="btn bg-danger {{showLinks}}"
                                        role="button">Delete
                                     </a>
                                 </div>
@@ -57,9 +41,6 @@
                 </div>
                 {% endfor %}
             </div>
-        </div>
-        <div class="col-md-7">
-            <p>some text</p>
         </div>
     </div>
 </div>
