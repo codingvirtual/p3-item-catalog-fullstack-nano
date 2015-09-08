@@ -5,7 +5,7 @@ import string
 import json
 
 from flask import Blueprint, render_template, request, redirect, url_for, \
-    jsonify, make_response
+    jsonify, make_response, flash
 
 from flask import session as login_session
 from sqlalchemy import create_engine
@@ -21,31 +21,53 @@ from app.mod_catalog.models import Base, Category, CategoryItem
 engine = create_engine('sqlite:///app/mod_db/catalog.db')
 Base.metadata.create_all(engine)
 Base.metadata.bind = engine
-DBSession = sessionmaker(bind=engine)
+DBSession = sessionmaker(bind = engine)
 session = DBSession()
 
 linkVisibility = 'hide'
 buttonVisibility = 'show'
-messages = []
 CLIENT_ID = json.loads(
     open('../client_secrets.json', 'r').read())['web']['client_id']
 
 mod_catalog = Blueprint('mod_catalog', __name__, url_prefix='/catalog')
 
+
+# Site entry point.
+# CATEGORY:         List
+# REQUIRED PARAMS:  None
+# PERMISSIONS:      Public
+@mod_catalog.route('/', methods=['GET', 'POST'])
+@mod_catalog.route('/catalog.html')
+def category_list():
+    global linkVisibility
+    global buttonVisibility
+    loginState('catalog.html')
+    categories = session.query(Category).all()
+    return render_template('catalog/catalog.html',
+                           categories=categories,
+                           showLinks=linkVisibility,
+                           showSignIn=buttonVisibility)
+
+
 @mod_catalog.route('/login')
 def showLogin():
+    global linkVisibility
+    global buttonVisibility
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
     #return "The current session state is %s" %login_session['state']
-    return render_template('auth/sign_in.html', state=state)
+    loginState('showLogin')
+    return render_template('auth/sign_in.html',
+        state=state,
+        showLinks=linkVisibility,
+        showSignIn=buttonVisibility)
 
 # OAUTH2 Signin Callback
 @mod_catalog.route('/gconnect', methods=['POST'])
 def gconnect():
     global linkVisibility
     global buttonVisibility
-    global messages
 
     if request.args.get('state') != login_session['state']:
         print "blew up line 61"
@@ -93,6 +115,7 @@ def gconnect():
         print "blew up line 103"
         response = make_response(
             json.dumps("Current user already logged in.", 200))
+        flash("You are already logged in.")
         response.headers['Content-Type'] = 'application/json'
         return response
     login_session['access_token'] = access_token
@@ -106,32 +129,33 @@ def gconnect():
     login_session['picture'] = data['picture']
 
     output = ''
-    output += '<h1>Welcome, '
+    output += 'Welcome, '
     output += login_session['username']
-    output += '!</h1>'
-    # flash("you are now logged in as %s"%login_session['username'])
-    messages = ['Sign-in Successful']
+    output += '! You are now signed in.'
+    flash(output)
     signedIn('true')
+    loginState('gconnect')
     print "made it to end"
     return output
 
 @mod_catalog.route('/logout')
 def gdisconnect():
-    global messages
     # Only disconnect a connected user.
     signedIn('false')
+    loginState('gdisconnect at beginning')
     access_token = login_session.get('access_token')
     if access_token is None:
         response = make_response(
             json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
+        flash("Current user not connected")
         return response
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print('here')
     if result['status'] == '200':
-        # Reset the user's sesson.
+        # Reset the user's session.
         del login_session['access_token']
         del login_session['gplus_id']
         del login_session['username']
@@ -144,26 +168,11 @@ def gdisconnect():
         response = make_response(
             json.dumps('Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
-    messages = ['You are now signed out']
+    flash('You have successfully signed out')
+    loginState('gdisconnect at the end')
     return redirect(url_for('.category_list'))
 
-# Site entry point.
-# CATEGORY:         List
-# REQUIRED PARAMS:  None
-# PERMISSIONS:      Public
-@mod_catalog.route('/', methods=['GET', 'POST'])
-@mod_catalog.route('/catalog.html')
-def category_list():
-    global linkVisibility
-    global buttonVisibility
-    global messages
-    loginState('catalog.html')
-    categories = session.query(Category).all()
-    return render_template('catalog/catalog.html',
-                           categories=categories,
-                           showLinks=linkVisibility,
-                           showSignIn=buttonVisibility,
-                           messages=messages)
+
 
 
 # CATEGORY:         Add
@@ -171,21 +180,28 @@ def category_list():
 # PERMISSIONS:      Logged-in user
 @mod_catalog.route('/category/add', methods=['GET', 'POST'])
 def addCategory():
+    global linkVisibility
+    global buttonVisibility
+
+    loginState('addCategory')
     if request.method == 'POST':
         newCategory = Category(name=request.form['name'])
         session.add(newCategory)
         session.commit()
         return redirect(url_for('.category_list'))
     else:
-        return render_template('catalog/new_category.html') \
- \
- \
+        return render_template('catalog/new_category.html',
+                               showLinks=linkVisibility,
+                               showSignIn=buttonVisibility)
 # CATEGORY:         Edit
 # REQUIRED PARAMS:  Category ID to retrieve current values (GET)
 #                   Form data with update info (POST)
 # PERMISSIONS:      Logged-in user
 @mod_catalog.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
 def editCategory(category_id):
+    global linkVisibility
+    global buttonVisibility
+    loginState('editCategory')
     category = session.query(Category).filter_by(id=category_id).one()
     if request.method == 'POST':
         if request.form['name']:
@@ -194,8 +210,11 @@ def editCategory(category_id):
             session.commit()
         return redirect(url_for('.category_list'))
     else:
-        return render_template('catalog/category_edit.html', category_id=category_id,
-                               category_name=category.name)
+        return render_template('catalog/category_edit.html',
+                               category_id=category_id,
+                               category_name=category.name,
+                               showLinks=linkVisibility,
+                               showSignIn=buttonVisibility)
 
 
 # CATEGORY:         Delete
@@ -203,6 +222,7 @@ def editCategory(category_id):
 # PERMISSIONS:      Logged-in user
 @mod_catalog.route('/category/<int:category_id>/delete')
 def catDelete(category_id):
+    loginState('catDelete')
     category = session.query(Category).filter_by(id=category_id).one()
     session.delete(category)
     session.commit()
@@ -222,20 +242,27 @@ def categoryListJSON():
 # PERMISSIONS:      Public
 @mod_catalog.route('/category/<int:category_id>/items')
 def itemList(category_id):
+    global linkVisibility
+    global buttonVisibility
+    loginState('itemList')
     category = session.query(Category).filter_by(id=category_id).one()
     categoryitems = session.query(CategoryItem) \
         .filter_by(category_id = category_id).all()
     return render_template('catalog/items_in_category.html',
                            category_id=category_id,
                            categoryname=category.name,
-                           categoryitems=categoryitems)
-
+                           categoryitems=categoryitems,
+                           showLinks=linkVisibility,
+                           showSignIn=buttonVisibility)
 
 # ITEMS:            Add
 # REQUIRED PARAMS:  Form data with item info
 # PERMISSIONS:      Logged-in user
 @mod_catalog.route('/item/<int:category_id>/add', methods=['GET', 'POST'])
 def addItem(category_id):
+    global linkVisibility
+    global buttonVisibility
+    loginState('addItem')
     if request.method == 'POST':
         category = session.query(Category).filter_by(id=category_id).one()
         new_item=CategoryItem(title=request.form['title'],
@@ -243,13 +270,15 @@ def addItem(category_id):
                               category=category)
         session.add(new_item)
         session.commit()
-        return redirect(url_for('itemList', category_id=category_id))
+        return redirect(url_for('.itemList', category_id=category_id))
     else:
         category = session.query(Category).filter_by(id=category_id).one()
         return render_template(
             'catalog/new_category_item.html',
             category_id=category_id,
-            category_name=category.name)
+            category_name=category.name,
+            showLinks=linkVisibility,
+            showSignIn=buttonVisibility)
 
 # ITEMS: Edit
 # REQUIRED PARAMS:  Item ID to display current item info in form (GET)
@@ -257,6 +286,9 @@ def addItem(category_id):
 # PERMISSIONS:      Logged-in user
 @mod_catalog.route('/item/<int:item_id>/edit', methods=['GET', 'POST'])
 def itemEdit(item_id):
+    global linkVisibility
+    global buttonVisibility
+    loginState('itemEdit')
     item = session.query(CategoryItem).filter_by(id=item_id).one()
     category_id = item.category_id
     if request.method == 'POST':
@@ -266,12 +298,14 @@ def itemEdit(item_id):
             item.description = request.form['description']
         session.add(item)
         session.commit()
-        return redirect(url_for('catalog/itemList', category_id=category_id))
+        return redirect(url_for('.itemList', category_id=category_id))
     else:
         return render_template('catalog/edit_item.html',
                                item_id=item.id,
                                item_title=item.title,
-                               item_description=item.description)
+                               item_description=item.description,
+                               showLinks=linkVisibility,
+                               showSignIn=buttonVisibility)
 
 
 # ITEMS:            Delete
@@ -279,6 +313,7 @@ def itemEdit(item_id):
 # PERMISSIONS:      Logged-in user
 @mod_catalog.route('/item/<int:categoryitems_id>/delete')
 def itemDelete(categoryitems_id):
+    loginState('itemDelete')
     item = session.query(CategoryItem).filter_by(id=categoryitems_id).one()
     session.delete(item)
     session.commit()
@@ -298,14 +333,10 @@ def itemlistJSON(category_id):
 
 def loginState(source):
     global linkVisibility
-    global messages
     global buttonVisibility
     print 'Source: ' + source
     print 'Link: ' + linkVisibility
     print 'Buttons: ' + buttonVisibility
-    print 'Messages: '
-    for i in messages:
-        print i
 
 def signedIn(status):
     global buttonVisibility
@@ -318,10 +349,4 @@ def signedIn(status):
         buttonVisibility = 'true'
     loginState('signedIn ' + status)
 
-
-def get_flashed_messages():
-    global messages
-    displayMessages = messages
-    messages = []
-    return displayMessages
 

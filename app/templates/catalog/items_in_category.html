@@ -1,14 +1,26 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <link rel=stylesheet type=text/css
-          href="{{ url_for('static', filename='css/styles.css') }}">
-    <title>Items in {{categoryname}}</title>
-</head>
-<body>
+{% extends "catalog/base.html" %}
+{% block header %}
+<nav id="header" class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">Catalog App</a>
+        </div>
+        <div id="navbar" class="nav navbar-nav navbar-right">
+            <div id="signIn" class="btn btn-default navbar-btn {{showSignIn}}">
+                <a href="/catalog/login">Sign In</a>
+            </div>
+            <div id="signOut" class="btn btn-default navbar-btn {{showLinks}}">
+                <a href="/catalog/logout">Sign Out</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+{% endblock header %}
+
+{% block content %}
 <div class="protected">
-    <h2><a href="/item/{{category_id}}/add" class="protected">Add a new Item to
+    <h2><a href="/catalog/item/{{category_id}}/add" class="protected">Add a new Item to
         This Category</a></h2>
     <br/>
 </div>
@@ -17,10 +29,9 @@
     <tr>
         <td>{{i.title}}</td>
         <td>{{i.description}}</td>
-        <td class="protected"><a href="/item/{{i.id}}/edit">Edit</a></td>
-        <td class="protected"><a href="/item/{{i.id}}/delete">Delete</a></td>
+        <td class="protected"><a href="/catalog/item/{{i.id}}/edit">Edit</a></td>
+        <td class="protected"><a href="/catalog/item/{{i.id}}/delete">Delete</a></td>
     </tr>
     {% endfor %}
 </table>
-</body>
-</html>
+{% endblock content%}

@@ -1,6 +1,6 @@
-from flask import Blueprint, Flask, render_template
+from flask import Blueprint, Flask, render_template, redirect, url_for
 
-from app.mod_catalog.catalog_operations import mod_catalog as catalog_module
+from app.mod_catalog.controllers import mod_catalog as catalog_module
 
 app = Flask(__name__)
 
@@ -12,3 +12,6 @@ def not_found(error):
 
 app.register_blueprint(catalog_module)
 
+@app.route('/', methods=['GET'])
+def show_list():
+    return redirect('/catalog/')

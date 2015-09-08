@@ -20,14 +20,8 @@
                     contentType: 'application/octet-stream; charset=utf-8',
                     data: authResult['code'],
                     success: function (result) {
-                        if (result) {
-                            $('#result')
-                                    .html(result);
-                            setTimeout(function () {
-                                console.log("redirecting");
-                                window.location.href = "/catalog/catalog.html";
-                            }, 500);
-                        }
+                        console.log("sign-in successful");
+                        window.location.href = "/catalog/catalog.html";
                     }
                 })
             } else if (authResult['error']) {

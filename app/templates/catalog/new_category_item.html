@@ -1,12 +1,24 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <link rel=stylesheet type=text/css
-          href="{{ url_for('static', filename='css/styles.css') }}">
-    <title>{{category_name}}: Add</title>
-</head>
-<body>
+{% extends "catalog/base.html" %}
+{% block header %}
+<nav id="header" class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">Catalog App</a>
+        </div>
+        <div id="navbar" class="nav navbar-nav navbar-right">
+            <div id="signIn" class="btn btn-default navbar-btn {{showSignIn}}">
+                <a href="/catalog/login">Sign In</a>
+            </div>
+            <div id="signOut" class="btn btn-default navbar-btn {{showLinks}}">
+                <a href="/catalog/logout">Sign Out</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+{% endblock header %}
+
+{% block content %}
 <h1>Add New Item to Category: {{category_name}}</h1>
 
 <form action="#" method='post'>
@@ -25,5 +37,4 @@
 
 
 </form>
-</body>
-</html>
+{% endblock content%}
