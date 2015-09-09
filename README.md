@@ -114,10 +114,20 @@ b)  Download the project to your computer into an appropriate directory. That
     can mean different things on different platforms, so interpretation is
     up to you. You can use git clone to pull down the entire project or use
     Github's app or "Download ZIP" options to pull it down.
+c)  CRITICAL: you will need to create a developer account with Google and
+    then create a project to associate with this project. The reason for this
+    is that a "client secret" is needed to enable the Google+ authentication
+    to work and you get that by creating a project. See the relevant docs
+    at Google's developer pages and the Google Developer Console to get that
+    set up. Once set up, you will need to download the client_secrets.json
+    file and save it to your machine ONE LEVEL UP from the project root (said
+    another way, it must be 2 levels up from run.py).
+    The file containing the secret must be named client_secrets.json or the 
+    app will not find it to load it.
 
     
 To RUN this application, follow the above installation steps and then:
-a)  Once you have the project downloaded, go to a command line and "cd" into
+a)  Once you have the project installed, go to a command line and "cd" into
     the directory containing the project root, then cd into the "catalog"
     directory (which is the project root itself).
 b)  Now just type this followed by the return key to launch the application.
