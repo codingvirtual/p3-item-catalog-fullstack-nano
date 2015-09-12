@@ -53,6 +53,13 @@ item2 = CategoryItem(title="Ball", description="A Soccer Ball", category=categor
 
 # add it to the database
 session.add(item2)
+
+#################################################
+#                                               #
+#       STOP CUSTOMIZATIONS HERE                #
+#                                               #
+#################################################
+
 session.commit()
 
 # print a success message to the console so the invoker knows it finished
