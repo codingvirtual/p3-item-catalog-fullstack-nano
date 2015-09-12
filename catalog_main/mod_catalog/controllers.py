@@ -231,7 +231,8 @@ def gdisconnect():
     # There is an active user if we make it to this point, so first we need
     # to revoke the access token so it cannot be used further.
     # Set up the request
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % \
+          login_session['access_token']
     h = httplib2.Http()
 
     # Actually make the request to revoke the token
