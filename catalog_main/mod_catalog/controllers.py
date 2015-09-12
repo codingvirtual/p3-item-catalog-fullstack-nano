@@ -71,7 +71,8 @@ def category_list():
                            categories=categories,
                            showLinks=linkVisibility,
                            showSignIn=buttonVisibility,
-                           state=state)
+                           state=state,
+                           CLIENT_ID=CLIENT_ID)
 
 
 # OAUTH2 Signin Callback
