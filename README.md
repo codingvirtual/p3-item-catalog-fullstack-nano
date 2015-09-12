@@ -168,23 +168,22 @@ problems. As such, it should not be considered a secure app and more should
 be done to improve the overall security of the app, specifically around the
 way that buttons are shown (using only CSS to "hide" them).
 
-If you delete a category, you will essentially orphan all the items under that
-category. The app will *NOT* reassign them to some other category. There are
-two potential options you, as a developer, could address this situation:
+If you delete a category, the system is presently set up to automatically
+delete all the child items of that category. That may NOT be the behavior
+you desire. If you wish to change the code to handle this differently, you
+will need to change the models.py file in mod_catalog:
 
-a) There is an SQLAlchemy feature (or actually: database feature) called 
-   cascades which can help here. Essentially it causes the automatic deletion 
-   of child entities once a parent entity is deleted.
-   
-   See this page for more details:
-   http://docs.sqlalchemy.org/en/latest/orm/cascades.html
-   
-b) You could add code that would query the db to see if there were any child
-   items and if there were, give the end user a choice of either deleting
-   the children or re-assigning them to a different category.
+Replace this line:
+category = relationship(Category, backref=backref("items", cascade="all"))
 
-I made some attempt to split the app up into logical packages but have not had
-much success getting it to work, hence the current state. More could be done
-to improve the code structure and separation of concerns.
+With this:
+category = relationship(Category)  
+   
+and then make the appropriate additional code modifications in controllers.py
+within the catDelete() function.
+
+Finally, I made some attempt to split the app up into logical packages but have 
+not had much success getting it to work, hence the current state. More could be 
+done to improve the code structure and separation of concerns.
 
 
