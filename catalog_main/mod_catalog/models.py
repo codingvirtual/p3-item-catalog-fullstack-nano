@@ -1,7 +1,7 @@
-
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref
 
 Base = declarative_base()
 
@@ -28,7 +28,7 @@ class CategoryItem(Base):
     id = Column(Integer, primary_key=True)
     description = Column(String(250))
     category_id = Column(Integer, ForeignKey('categories.id'))
-    category = relationship(Category)
+    category = relationship(Category, backref=backref("items", cascade="all"))
 
     # We added this serialize function to be able to send JSON objects in a
     # serializable format
