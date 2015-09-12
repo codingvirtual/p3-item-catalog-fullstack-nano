@@ -1,6 +1,8 @@
 __author__ = 'Greg'
 
 import os
+import random
+import string
 
 # Statement for enabling the development environment
 DEBUG = True
@@ -13,3 +15,6 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # incoming requests using one and performing background
 # operations using the other.
 THREADS_PER_PAGE = 2
+
+SECRET_KEY = ''.join(random.choice(string.ascii_uppercase + string.digits)
+    for x in xrange(32))
