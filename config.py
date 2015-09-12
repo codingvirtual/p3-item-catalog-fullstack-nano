@@ -17,4 +17,4 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 THREADS_PER_PAGE = 2
 
 SECRET_KEY = ''.join(random.choice(string.ascii_uppercase + string.digits)
-    for x in xrange(32))
+                     for x in xrange(32))
