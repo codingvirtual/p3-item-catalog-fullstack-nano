@@ -50,7 +50,7 @@
                         // any success (200 OK) means log in was successful
                         console.log("sign-in successful");
                         // send the user to the main page
-                        window.location.href = "/catalog_main/catalog.html";
+                        window.location.href = "/catalog/catalog.html";
                     }
                 })
             } else if (authResult['error']) {
@@ -59,7 +59,7 @@
                 console.log("There was an error: " + authResult['error']);
                 // send the user back to the main page. Since state was not
                 // set, the user will not be logged in
-                window.location.href = "/catalog_main/catalog.html";
+                window.location.href = "/catalog/catalog.html";
             }
         }
     </script>
