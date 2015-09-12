@@ -35,21 +35,18 @@ category1 = Category(name="Snowboarding")
 
 # add it to the database
 session.add(category1)
-session.commit()
 
 # create an item "under" the above category
 item1 = CategoryItem(title="Goggles", description="Some Goggles", category=category1)
 
 # add it to the database
 session.add(item1)
-session.commit()
 
 # create a second category
 category2 = Category(name="Soccer")
 
 # add it to the database
 session.add(category2)
-session.commit()
 
 # create a second item "under" the 2nd category just above
 item2 = CategoryItem(title="Ball", description="A Soccer Ball", category=category2)
