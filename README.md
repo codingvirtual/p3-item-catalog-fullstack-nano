@@ -169,8 +169,19 @@ be done to improve the overall security of the app, specifically around the
 way that buttons are shown (using only CSS to "hide" them).
 
 If you delete a category, you will essentially orphan all the items under that
-category. The app will *NOT* reassign them to some other category. This should
-be corrected before deploying the application.
+category. The app will *NOT* reassign them to some other category. There are
+two potential options you, as a developer, could address this situation:
+
+a) There is an SQLAlchemy feature (or actually: database feature) called 
+   cascades which can help here. Essentially it causes the automatic deletion 
+   of child entities once a parent entity is deleted.
+   
+   See this page for more details:
+   http://docs.sqlalchemy.org/en/latest/orm/cascades.html
+   
+b) You could add code that would query the db to see if there were any child
+   items and if there were, give the end user a choice of either deleting
+   the children or re-assigning them to a different category.
 
 I made some attempt to split the app up into logical packages but have not had
 much success getting it to work, hence the current state. More could be done
