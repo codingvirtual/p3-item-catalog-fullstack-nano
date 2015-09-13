@@ -31,7 +31,7 @@ session = DBSession()
 def login_required(func_to_wrap):
     @wraps(func_to_wrap)
     def wrap(*args, **kwargs):
-        if "username" in login_session:
+        if 'username' in login_session:
             return func_to_wrap(*args, **kwargs)
         else:
             flash("You must be logged in to use that page")
