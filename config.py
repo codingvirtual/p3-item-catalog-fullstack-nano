@@ -18,3 +18,10 @@ THREADS_PER_PAGE = 2
 
 SECRET_KEY = ''.join(random.choice(string.ascii_uppercase + string.digits)
                      for x in xrange(32))
+
+# # Enable protection against *Cross-site Request Forgery (CSRF)*
+CSRF_ENABLED = True
+
+# Use a secure, unique and absolutely secret key for
+# signing the data.
+CSRF_SESSION_KEY = SECRET_KEY
