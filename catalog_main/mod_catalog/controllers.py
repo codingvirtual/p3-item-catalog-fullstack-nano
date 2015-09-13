@@ -331,7 +331,7 @@ def addCategory():
 def editCategory(category_id):
 
     # Grab the category info from the database based on the category's id
-    category = session.query(Category).filter_by(id=category_id).one()
+    category = session.query(Category).get(category_id)
 
     # if we got here with a POST request, that means the user has filled out
     # the form and we need to process the update to the database
@@ -372,7 +372,7 @@ def catDelete(category_id):
 
     # extract the category object from the database
     # so we can then pass it to the delete function.
-    category = session.query(Category).filter_by(id=category_id).one()
+    category = session.query(Category).get(category_id)
 
     # Delete the category.
     session.delete(category)
@@ -405,11 +405,10 @@ def categoryListJSON():
 def itemList(category_id):
 
     # Get the category first using the category id
-    category = session.query(Category).filter_by(id=category_id).one()
+    category = session.query(Category).get(category_id)
 
     # now go fetch the items for this category from the dab
-    categoryitems = session.query(CategoryItem) \
-        .filter_by(category_id = category_id).all()
+    categoryitems = category.items
 
     # render the results by passing the relevant data to the template
     return render_template('catalog/items_in_category.html',
@@ -434,7 +433,7 @@ def addItem(category_id):
     if request.method == 'POST':
         # Request is a POST, so process adding a new item
         # Get the category info first so we can relate the item to it
-        category = session.query(Category).filter_by(id=category_id).one()
+        category = session.query(Category).get(category_id)
 
         # Create the item object from the form data
         new_item = CategoryItem(title=request.form['title'],
@@ -455,7 +454,7 @@ def addItem(category_id):
         # Extract the category so we can display its title in the
         # template (so the user knows which category they are adding an
         # item to).
-        category = session.query(Category).filter_by(id=category_id).one()
+        category = session.query(Category).get(category_id)
 
         # return the template with the category info passed in
         return render_template(
@@ -479,7 +478,7 @@ def addItem(category_id):
 def itemEdit(item_id):
 
     # Pull the item info from the database using the item id
-    item = session.query(CategoryItem).filter_by(id=item_id).one()
+    item = session.query(CategoryItem).get(item_id)
 
     # extract the category id
     category_id = item.category_id
@@ -527,7 +526,7 @@ def itemEdit(item_id):
 def itemDelete(categoryitems_id):
 
     # Extract the item to be deleted from the database
-    item = session.query(CategoryItem).filter_by(id=categoryitems_id).one()
+    item = session.query(CategoryItem).get(categoryitems_id)
 
     # use that item object to delete the item
     session.delete(item)
@@ -537,7 +536,6 @@ def itemDelete(categoryitems_id):
     # main page.
     flash('Item deleted')
     return redirect(url_for('.category_list'))
-
 
 
 # ITEMS:            JSON Endpoint
