@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-md-4 col-md-offset-4">
             <h1 class="text-center">Categories</h1>
-            <a href="/catalog_main/category/add"
+            <a href="/catalog/category/add"
                      class="btn bg-success {{showLinks}}"
                      role="button">Add a new Category</a>
             <br />
@@ -21,7 +21,7 @@
                     <div class="row">
                         <div class="col-md-7">
                             <a class="active"
-                               href="/catalog_main/category/{{i.id}}/items">{{i.name}}</a>
+                               href="/catalog/category/{{i.id}}/items">{{i.name}}</a>
                         </div>
                         <!-- the following div contains the edit and delete
                                 buttons. They will only show if the showLinks
@@ -29,13 +29,13 @@
                         <div class="col-md-5">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <a href="/catalog_main/category/{{i.id}}/edit"
+                                    <a href="/catalog/category/{{i.id}}/edit"
                                        class="btn bg-success {{showLinks}}"
                                        role="button">Edit
                                     </a>
                                 </div>
                                 <div class="col-md-6">
-                                    <a href="/catalog_main/category/{{i.id}}/delete"
+                                    <a href="/catalog/category/{{i.id}}/delete"
                                        class="btn bg-danger {{showLinks}}"
                                        role="button">Delete
                                     </a>

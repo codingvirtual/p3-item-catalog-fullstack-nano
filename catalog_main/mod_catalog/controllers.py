@@ -1,6 +1,7 @@
 import random
 import string
 import json
+from functools import wraps
 from flask import Blueprint, render_template, request, redirect, url_for, \
     jsonify, make_response, flash
 from flask import session as login_session
@@ -21,16 +22,48 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-# flags that influence the visibility of links that should only be
-# available to users that are signed in.
-# NOTE: this is a very light-weight way to do this. It would probably
-# be better to use the login status to choose the right template to
-# return and only return a page that has the right set of buttons (or
-# lacks them accordingly)
-linkVisibility = 'hide'
-buttonVisibility = 'show'
+# Decorator function to annotate the methods/pages that require a login.
+# Checks to see if the session has a username, which would mean that the
+# user had logged in. Either allows the function to proceed if the user is
+# logged in, or returns them to the main landing page for the site and
+# flashes a message that they must be logged in to use the page.
 
-# Retrive the Google client id from a private file located "above" the
+def login_required(func_to_wrap):
+    @wraps(func_to_wrap)
+    def wrap(*args, **kwargs):
+        if "username" in login_session:
+            return func_to_wrap(*args, **kwargs)
+        else:
+            flash("You must be logged in to use that page")
+            return redirect(url_for(".category_list"))
+    return wrap
+
+
+# Function that determines whether or not to show the G+ Login button or
+# the Logout button. The function is actually returning a class name that
+# is defined by Bootstrap to either show or hide a given element when you
+# apply the respective class to that element.
+
+def show_login(session):
+    if 'username' in session:
+        return 'hide'
+    else:
+        return 'show'
+
+# Function that determines whether or not to show the protected links/buttons
+# (those that require the user to be logged in to use).
+# The function is actually returning a class name that
+# is defined by Bootstrap to either show or hide a given element when you
+# apply the respective class to that element.
+
+def links_are_visible(session):
+    if 'username' in session:
+        return 'show'
+    else:
+        return 'hide'
+    
+    
+# Retrieve the Google client id from a private file located "above" the
 # project root. NOTE: you must have the JSON download from Google
 # stored one level above the project and the file must be named
 # client_secrets.json in order for the application to run correctly.
@@ -52,8 +85,6 @@ mod_catalog = Blueprint('mod_catalog', __name__, url_prefix='/catalog')
 @mod_catalog.route('/', methods=['GET', 'POST'])
 @mod_catalog.route('/catalog.html')
 def category_list():
-    # use 'global' keyword to enable editing of the login_session dictionary
-    global login_session
 
     # Create a state value from random characters. This value is used to
     # prevent request forgeries
@@ -69,8 +100,8 @@ def category_list():
     # categories, visibility indicators, and the state variable.
     return render_template('catalog/catalog.html',
                            categories=categories,
-                           showLinks=linkVisibility,
-                           showSignIn=buttonVisibility,
+                           showLinks=links_are_visible(login_session),
+                           showSignIn=show_login(login_session),
                            state=state,
                            CLIENT_ID=CLIENT_ID)
 
@@ -83,8 +114,6 @@ def category_list():
 @mod_catalog.route('/gconnect', methods=['POST'])
 def gconnect():
     # use the 'global' keyword so that these values can be changed below
-    global linkVisibility
-    global buttonVisibility
     global login_session
 
     # Extract the 'state' value from the request arguments and compare to
@@ -199,10 +228,6 @@ def gconnect():
 
     # Queue the message
     flash(output)
-
-    # call utility function that sets the correct values for the various
-    # flags and status variables used throughout the app
-    signedIn('true')
     return output
 
 # OAUTH2 Sign-out function
@@ -247,9 +272,6 @@ def gdisconnect():
         del login_session['username']
         del login_session['picture']
 
-        # call utility funciton to change the flags for the app.
-        signedIn('false')
-
         # set up response
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
@@ -271,20 +293,13 @@ def gdisconnect():
 # This block presents a page that allows the user to add a new category
 # to the database.
 @mod_catalog.route('/category/add', methods=['GET', 'POST'])
+@login_required
 def addCategory():
-    # Validate that there is a user logged in. This prevents the page
-    # from being accessed via direct URL
-    if 'username' not in login_session:
-        # Queue a message telling them they must be logged in to use this page
-        flash("You must be logged in to use that page")
-
-        # send the user back to the main page for the site
-        return redirect(url_for('.category_list'))
 
     # If we got here via a POST, that means the user has filled out the form
     # on the page and submitted it, so we process the add to the database.
     if request.method == 'POST':
-        #Extract the category name from the form.
+        # Extract the category name from the form.
         newCategory = Category(name=request.form['name'])
 
         # Add it to the database and commit
@@ -300,9 +315,10 @@ def addCategory():
     else:
         # Render the new category form and pass in the relevant variables
         return render_template('catalog/new_category.html',
-                               showLinks=linkVisibility,
-                               showSignIn=buttonVisibility,
-                               state=login_session['state'])
+                               showLinks=links_are_visible(login_session),
+                               showSignIn=show_login(login_session),
+                               state=login_session['state'],
+                               CLIENT_ID=CLIENT_ID)
 
     
 # CATEGORY:         Edit
@@ -311,12 +327,8 @@ def addCategory():
 # PERMISSIONS:      Logged-in user
 # This block allows the user to edit the name of a given category.
 @mod_catalog.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
+@login_required
 def editCategory(category_id):
-    # verify there is a logged-in user.
-    if 'username' not in login_session:
-        # no logged-in user, so queue a message and return them to the main page
-        flash("You must be logged in to use that page")
-        return redirect(url_for('.category_list'))
 
     # Grab the category info from the database based on the category's id
     category = session.query(Category).filter_by(id=category_id).one()
@@ -342,9 +354,10 @@ def editCategory(category_id):
         return render_template('catalog/category_edit.html',
                                category_id=category_id,
                                category_name=category.name,
-                               showLinks=linkVisibility,
-                               showSignIn=buttonVisibility,
-                               state=login_session['state'])
+                               showLinks=links_are_visible(login_session),
+                               showSignIn=show_login(login_session),
+                               state=login_session['state'],
+                               CLIENT_ID=CLIENT_ID)
 
 
 # CATEGORY:         Delete
@@ -354,16 +367,10 @@ def editCategory(category_id):
 # category, which they should only be able to see (or do) if they are a
 # logged-in user.
 @mod_catalog.route('/category/<int:category_id>/delete')
+@login_required
 def catDelete(category_id):
-    # confirm they are logged in
-    if 'username' not in login_session:
 
-        # User is not logged in, so queue a message and return them
-        # to the main page
-        flash("You must be logged in to use that page")
-        return redirect(url_for('.category_list'))
-
-    # Valid user, so extract the category object from the database
+    # extract the category object from the database
     # so we can then pass it to the delete function.
     category = session.query(Category).filter_by(id=category_id).one()
 
@@ -396,6 +403,7 @@ def categoryListJSON():
 # to view a list of items in that category.
 @mod_catalog.route('/category/<int:category_id>/items')
 def itemList(category_id):
+
     # Get the category first using the category id
     category = session.query(Category).filter_by(id=category_id).one()
 
@@ -408,23 +416,19 @@ def itemList(category_id):
                            category_id=category_id,
                            categoryname=category.name,
                            categoryitems=categoryitems,
-                           showLinks=linkVisibility,
-                           showSignIn=buttonVisibility,
-                           state=login_session['state'])
+                           showLinks=links_are_visible(login_session),
+                           showSignIn=show_login(login_session),
+                           state=login_session['state'],
+                           CLIENT_ID=CLIENT_ID)
 
 # ITEMS:            Add
 # REQUIRED PARAMS:  Form data with item info
 # PERMISSIONS:      Logged-in user
 # This block is executed when the user wants to add an item to a category.
 @mod_catalog.route('/item/<int:category_id>/add', methods=['GET', 'POST'])
+@login_required
 def addItem(category_id):
-    # Confirm a valid user is logged in
-    if 'username' not in login_session:
-        # No valid user, so queue a message and return them to the main page
-        flash("You must be logged in to use that page")
-        return redirect(url_for('.category_list'))
 
-    # at this point we do have a valid user.
     # Check if the request was a POST which means the user has submitted
     # the form to add the new item
     if request.method == 'POST':
@@ -458,9 +462,10 @@ def addItem(category_id):
             'catalog/new_category_item.html',
             category_id=category_id,
             category_name=category.name,
-            showLinks=linkVisibility,
-            showSignIn=buttonVisibility,
-            state=login_session['state'])
+            showLinks=links_are_visible(login_session),
+            showSignIn=show_login(login_session),
+            state=login_session['state'],
+            CLIENT_ID=CLIENT_ID)
 
 # ITEMS: Edit
 # REQUIRED PARAMS:  Item ID to display current item info in form (GET)
@@ -470,14 +475,9 @@ def addItem(category_id):
 # item in the item list for a given category. The user should only be
 # able to see (and do) the edit if they are logged in.
 @mod_catalog.route('/item/<int:item_id>/edit', methods=['GET', 'POST'])
+@login_required
 def itemEdit(item_id):
-    # Validate we have a logged-in user
-    if 'username' not in login_session:
-        # No user, so queue a message and return them to the main page
-        flash("You must be logged in to use that page")
-        return redirect(url_for('.category_list'))
 
-    # We have a valid user, so continue.
     # Pull the item info from the database using the item id
     item = session.query(CategoryItem).filter_by(id=item_id).one()
 
@@ -510,9 +510,10 @@ def itemEdit(item_id):
                                item_id=item.id,
                                item_title=item.title,
                                item_description=item.description,
-                               showLinks=linkVisibility,
-                               showSignIn=buttonVisibility,
-                               state=login_session['state'])
+                               showLinks=links_are_visible(login_session),
+                               showSignIn=show_login(login_session),
+                               state=login_session['state'],
+                               CLIENT_ID=CLIENT_ID)
 
 
 # ITEMS:            Delete
@@ -522,14 +523,9 @@ def itemEdit(item_id):
 # an item in the item list. There should be a valid user in order to see
 # (or do) this edit page.
 @mod_catalog.route('/item/<int:categoryitems_id>/delete')
+@login_required
 def itemDelete(categoryitems_id):
-    # Check for a valid user
-    if 'username' not in login_session:
-        # No user, so queue a message and return them to the main page
-        flash("You must be logged in to use that page")
-        return redirect(url_for('.category_list'))
 
-    # Valid user, so continue
     # Extract the item to be deleted from the database
     item = session.query(CategoryItem).filter_by(id=categoryitems_id).one()
 
@@ -557,21 +553,3 @@ def itemlistJSON(category_id):
 
     # Return the results as JSON
     return jsonify(items_list=[i.serialize for i in categoryitems])
-
-# Utility function that sets the state of the visibility flags
-def signedIn(status):
-    global buttonVisibility
-    global linkVisibility
-    # Set the flags based on whether or not there is a logged-in user
-    if status == 'true':
-        # user IS logged in. Show buttons or links to restricted content,
-        # show the Logout button, and hidee the G+ login button
-        linkVisibility = 'show'
-        buttonVisibility = 'hide'
-    else:
-        # user is not logged in. Do NOT show buttons or links to restricted
-        # content, hide the logout button, but show the G+ login button
-        linkVisibility = 'hide'
-        buttonVisibility = 'true'
-
-
